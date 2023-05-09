@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: J-Noven Club API
+  version: 1.0.1
+  description: J-Novel Club API
+  license:
+    name: J-Novel Club
+externalDocs:
+  description: Forum
+  url: https://forums.j-novel.club/topic/5142/developer-psa-labs-j-novel-club-is-your-new-friend?page=1
+servers:
+  - url: https://labs.j-novel.club/app/v1
+    variables:
+      'format':
+        default: 'protobuf'
+        enum:
+          - json
+          - protobuf
+          - text
+        description: ''
+tags:
+  - name: auth
+    description: Login/Logout
+    externalDocs:
+      description: Get Access
+      url: https://labs.j-novel.club/app/v1
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+      - login
+      - password
+      properties:
+        login:
+          type: string
+          description: Username
+          example: "jnovelclubuser@example.com"
+        password:
+          type: string
+          description: Password
+          example: "swordfish"
+        slim:
+          type: boolean
+          description: Set this to true if only needing a login token
+    LoginResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A Bearer Token
+          example: "lab_12ABCDEFGHIJL3MN4OPQ5RS6TIVWXUZABCDEF7GHIJKLM8NOPQRS"
+        created:
+          type: string
+          format: date-time
+          description: Timestamp for the login request
+        ttl:
+          type: string
+          description: The lenght of time the Bearer token is value in specified units, such as "s" for seconds
+          example: "123456s"
+      
+paths:
+  /auth/login:
+    summary: Login
+    description: Get an auth token
+    post:
+      summary: ''
+      description: 'Get an authentication token'
+      operationId: 'login'
+      parameters:
+        - name: 'format'
+          in: 'query'
+          schema:
+            type: string
+            enum:
+              - json
+              - protobuf
+              - text
+            default: protobuf
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+              
+            
+      responses:
+        200:
+          description: Login was successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+      tags:
+        - auth
