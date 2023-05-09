@@ -27,6 +27,11 @@ tags:
     externalDocs:
       description: Profile
       url: https://labs.j-novel.club/app/v1
+  - name: data
+    description: Information about Series
+    externalDocs:
+      description: Book and Manga Series
+      url: https://labs.j-novel.club/app/v1
 components:
   securitySchemes:
     labs_auth:
@@ -231,6 +236,10 @@ components:
         name:
           type: string
           example: J-Novel Club
+    CDNUrl:
+      type: string
+      format: url
+      example: "https://cdn.example.com/Part1/bookname1-cover-400.jpg"
     UserFeedItem:
       type: object
       properties:
@@ -243,21 +252,104 @@ components:
           example: https://j-novel.club/read/book-name-volume-1-part-1
         title:
           type: string
-          example: "Book Name: Volume 1 Part 1"
+          $ref: "#/components/schemas/BookPartTitle"
         summary:
           type: string
           example: "Read Book Name: Volume 1 Part 1 (available for subscribers)"
         image:
           type: string
-          format: url
-          example: "https://cdn.example.com/Part1/bookname1-cover-400.jpg"
+          $ref: "#/components/schemas/CDNUrl"
         date_published:
           type: string
           format: date-time
+    BookPartTitle:
+      type: string
+      example: "Book Name: Volume 1 Part 1"
+    BookPartSlug:
+      type: string
+      example: "book-name-volume-1-part-1"
     LegacyUserId:
       type: string
       example: "0a1234567890b123456c7def"
       description: Can be retrieved from Profile.legacyId
+    Pagination:
+      type: object
+      properties:
+        limit:
+          type: integer
+          example: 50
+          minimum: 1
+        skip:
+          type: integer
+          example: 0
+          minimum: 0
+        lastPage:
+          type: boolean
+          example: false
+    CoverData:
+      type: object
+      properties:
+        originalUrl:
+          type: string
+          example: ""
+          format: url
+        coverUrl:
+          type: string
+          $ref: "#/components/schemas/CDNUrl"
+        thumbnailUrl:
+          type: string
+          $ref: "#/components/schemas/CDNUrl"
+    PartData:
+      type: object
+      properties:
+        legacyId:
+          type: string
+          example: "0123456a78901b234567cd8e"
+        title:
+          type: string
+          $ref: "#/components/schemas/BookPartTitle"
+        originalTitle:
+          type: string
+          example: ""
+        slug:
+          type: string
+          $ref: "#/components/schemas/BookPartSlug"
+        number:
+          type: integer
+        preview:
+          type: boolean
+          example: false
+        hidden:
+          type: boolean
+          example: false
+        created:
+          type: string
+          format: date-time
+        expiration:
+          type: string
+          format: date-time
+        launch:
+          type: string
+          format: date-time
+        cover:
+          type: object
+          $ref: "#/components/schemas/CoverData"
+        progress:
+          type: integer
+          minimum: 0
+        totalMangaPages:
+          type: integer
+          minimum: 0
+    ReleaseData:
+      type: object
+      properties:
+        parts:
+          type: array
+          items:
+            $ref: "#/components/schemas/PartData"
+        Pagination:
+          type: object
+          $ref: "#/components/schemas/Pagination"
       
 paths:
   /auth/login:
@@ -382,8 +474,36 @@ paths:
       security:
         - labs_auth:
           - read
-          - write
-
-
-
+  /releases:
+    summary: List of releases
+    get:
+      parameters:
+        - name: 'format'
+          in: 'query'
+          schema:
+            $ref: '#/components/schemas/ResponseFormat'
+        - name: 'page'
+          in: 'query'
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        - name: 'skip'
+          in: 'query'
+          schema:
+            type: integer
+            minimum: 0
+            example: 0
+      responses:
+        200:
+          description: List of releases
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReleaseData"
+      tags:
+      - data
+      security:
+        - labs_auth:
+          - read
   
