@@ -78,7 +78,7 @@ components:
       properties:
         legacyId:
           type: string
-          example: "0a1234567890b123456c7def"
+          $ref: '#/components/schemas/LegacyUserId'
         analyticsId:
           type: string
           example: "ab1234b56789c12de3456789"
