@@ -178,15 +178,27 @@ components:
            - MONTH
         active:
           type: boolean
+
+    FeedSummary:
+      type: object
+      properties:
+        username:
+          type: string
+          example: jnovelclubuser
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
     Link:
       type: object
       properties:
         href:
           type: string
-          format: path
+          format: relative_url
           example: "/feed/user/0a1234567890b123456c7def.json"
-        "#text":
+        "#pcdata":
           type: string
+          format: title
           example: "JSON"
     UserFeed:
       type: object
@@ -338,7 +350,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Link'
+                  $ref: '#/components/schemas/FeedSummary'
                 example: "<html lang=\"en-us\">\n\n<head>\n\t<meta charset=\"utf-8\">\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\t<title>Feed list for jnovelclubuser</title>\n</head>\n\n<body>\n\t<h1>Feed list for jnovelclubuser</h1>\n\t<ul>\n\t\t<li><a href=\"/feed/user/0a1234567890b123456c7def.rss\">RSS</a></li>\n\t\t<li><a href=\"/feed/user/0a1234567890b123456c7def.atom\">Atom</a></li>\n\t\t<li><a href=\"/feed/user/0a1234567890b123456c7def.json\">JSON</a></li>\n\t</ul>\n</body>\n\n</html>"
       tags:
       - profile
