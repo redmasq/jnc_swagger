@@ -30,6 +30,11 @@ tags:
       description: Profile
       url: https://labs.j-novel.club/app/v1
 components:
+  securitySchemes:
+    labs_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: token
   schemas:
     ResponseFormat:
       type: string
@@ -70,7 +75,7 @@ components:
           type: string
           description: The lenght of time the Bearer token is value in specified units, such as "s" for seconds
           example: "123456s"
-    ProfileResponse:
+    Profile:
       type: object
       properties:
         legacyId:
@@ -117,6 +122,64 @@ components:
         created:
           type: string
           format: date-time
+    ProfileSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "sub_AbCd01eFG23hIJ"
+        status:
+          type: string
+          format: enum
+          enum:
+           - ACTIVE
+           - INACTIVE
+        created:
+          type: string
+          format: date-time
+        currentPeriodStart:
+          type: string
+          format: date-time
+        currentPeriodEnd:
+          type: string
+          format: date-time
+        cancelledAt:
+          type: string
+          format: date-time
+        cancelAtPeriodEnd:
+          type: boolean
+          example: false
+        trialStart:
+          type: string
+          format: date-time
+        trialEnd:
+          type: string
+          format: date-time
+        start:
+          type: string
+          format: date-time
+        plan:
+          type: object
+          $ref: "#/components/schemas/ProfileSubscriptionPlan"
+    ProfileSubscriptionPlan:
+      type: object
+      properties:
+        id:
+          type: string
+        product:
+          type: string
+          example: prod_ABcDeFGhijK0L1
+        amount:
+          type: integer
+          minimum: 0
+        interval:
+          type: string
+          format: enum
+          enum:
+           - MONTH
+        active:
+          type: boolean
+
 
       
 paths:
@@ -164,6 +227,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProfileResponse'
+                $ref: '#/components/schemas/Profile'
       tags:
       - profile
+      security:
+        - labs_auth:
+          - read
+          - write
+  /me/subscription:
+    summary: Profile Subscription Information
+    description: Details about Subscription
+    get:
+      parameters:
+        - name: 'format'
+          in: 'query'
+          schema:
+            $ref: '#/components/schemas/ResponseFormat'
+      responses:
+        200:
+          description: User Subscription Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSubscription'
+      tags:
+      - profile
+      security:
+        - labs_auth:
+          - read
+          - write
+  
