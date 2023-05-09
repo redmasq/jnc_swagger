@@ -397,6 +397,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
+          links:
+            LegacyUserId-FeedSummary:
+              operationId: feedSummaryForUser
+              parameters:
+                userId: '$response.body#/legacyId'
+            LegacyUserId-FeedJson:
+              operationId: feedJsonForUser
+              parameters:
+                userId: '$response.body#/legacyId'
+              
+
       tags:
       - profile
       security:
@@ -428,6 +439,7 @@ paths:
   /feed/user/{userId}:
     summary: Feed for User
     get:
+      operationId: feedSummaryForUser
       parameters:
        - name: userId
          in: 'path'
@@ -456,6 +468,7 @@ paths:
   /feed/user/{userId}.json:
     summary: Feed for User in Json format
     get:
+      operationId: feedJsonForUser
       parameters:
        - name: userId
          in: 'path'
