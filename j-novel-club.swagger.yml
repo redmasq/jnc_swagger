@@ -24,8 +24,20 @@ tags:
     externalDocs:
       description: Get Access
       url: https://labs.j-novel.club/app/v1
+  - name: profile
+    description: Information about user and feed
+    externalDocs:
+      description: Profile
+      url: https://labs.j-novel.club/app/v1
 components:
   schemas:
+    ResponseFormat:
+      type: string
+      enum:
+       - json
+       - protobuf
+       - text
+      default: protobuf
     LoginRequest:
       type: object
       required:
@@ -58,6 +70,54 @@ components:
           type: string
           description: The lenght of time the Bearer token is value in specified units, such as "s" for seconds
           example: "123456s"
+    ProfileResponse:
+      type: object
+      properties:
+        legacyId:
+          type: string
+          example: "0a1234567890b123456c7def"
+        analyticsId:
+          type: string
+          example: "ab1234b56789c12de3456789"
+        customerId:
+          type: string
+          example: "cus_ABcDEfGhi0J1KL"
+        email:
+          type: string
+          format: email
+          example: "jnovelclubuser@example.com"
+        username:
+          type: string
+          example: "jnovelclubuser"
+        forumId:
+          type: integer
+          minimum: 0
+          example: 99999
+        emailVerified:
+          type: boolean
+        country:
+          type: string
+          example: "us"
+          description: "Two letter country code"
+        earnedCredits:
+          type: integer
+          minimum: 0
+          example: 99
+          description: "Likely no longer used"
+        usedCredits:
+          type: integer
+          minimum: 0
+          example: 99
+          description: "Likely no longer used"
+        coins:
+          type: integer
+          minimum: 0
+          example: 9999
+          description: "Coins used for things such as buying digital copies"
+        created:
+          type: string
+          format: date-time
+
       
 paths:
   /auth/login:
@@ -71,12 +131,7 @@ paths:
         - name: 'format'
           in: 'query'
           schema:
-            type: string
-            enum:
-              - json
-              - protobuf
-              - text
-            default: protobuf
+            $ref: '#/components/schemas/ResponseFormat'
       requestBody:
         content:
           'application/json':
@@ -93,3 +148,22 @@ paths:
                 $ref: '#/components/schemas/LoginResponse'
       tags:
         - auth
+  /me:
+    summary: Profile
+    description: Show information about the user
+    get:
+      parameters:
+        - name: 'format'
+          in: query
+          schema:
+            $ref: '#/components/schemas/ResponseFormat'
+
+      responses:
+        200:
+          description: User Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+      tags:
+      - profile
