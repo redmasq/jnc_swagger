@@ -15,7 +15,7 @@ servers:
         default: 'v1'
         enum:
           - v1
-        description: ''
+        description: 'Indicator of API version'
 tags:
   - name: auth
     description: Login/Logout
@@ -178,8 +178,74 @@ components:
            - MONTH
         active:
           type: boolean
-
-
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+          format: path
+          example: "/feed/user/0a1234567890b123456c7def.json"
+        "#text":
+          type: string
+          example: "JSON"
+    UserFeed:
+      type: object
+      properties:
+        version:
+          type: string
+          format: url
+          example: "https://jsonfeed.org/version/1"
+        title:
+          type: string
+          example: "Series follows for jnovelclubuser"
+        home_page_url:
+          type: string
+          format: url
+          example: https://j-novel.club/user
+        description:
+          type: string
+          example: "You can add series to your followed list on our website or app"
+        author:
+          type: object
+          $ref: '#/components/schemas/UserFeedAuthor'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserFeedItem'
+          
+    UserFeedAuthor:
+      type: object
+      properties:
+        name:
+          type: string
+          example: J-Novel Club
+    UserFeedItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: https://j-novel.club/read/book-name-volume-1-part-1
+        url:
+          type: string
+          format: url
+          example: https://j-novel.club/read/book-name-volume-1-part-1
+        title:
+          type: string
+          example: "Book Name: Volume 1 Part 1"
+        summary:
+          type: string
+          example: "Read Book Name: Volume 1 Part 1 (available for subscribers)"
+        image:
+          type: string
+          format: url
+          example: "https://cdn.example.com/Part1/bookname1-cover-400.jpg"
+        date_published:
+          type: string
+          format: date-time
+    LegacyUserId:
+      type: string
+      example: "0a1234567890b123456c7def"
+      description: Can be retrieved from Profile.legacyId
       
 paths:
   /auth/login:
@@ -255,4 +321,57 @@ paths:
         - labs_auth:
           - read
           - write
+  /feed/user/{userId}:
+    summary: Feed for User
+    get:
+      parameters:
+       - name: userId
+         in: 'path'
+         required: true
+         schema:
+          $ref: '#/components/schemas/LegacyUserId'
+      responses:
+        200:
+          description: Feed summary
+          content:
+            text/html:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Link'
+                example: "<html lang=\"en-us\">\n\n<head>\n\t<meta charset=\"utf-8\">\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\t<title>Feed list for jnovelclubuser</title>\n</head>\n\n<body>\n\t<h1>Feed list for jnovelclubuser</h1>\n\t<ul>\n\t\t<li><a href=\"/feed/user/0a1234567890b123456c7def.rss\">RSS</a></li>\n\t\t<li><a href=\"/feed/user/0a1234567890b123456c7def.atom\">Atom</a></li>\n\t\t<li><a href=\"/feed/user/0a1234567890b123456c7def.json\">JSON</a></li>\n\t</ul>\n</body>\n\n</html>"
+      tags:
+      - profile
+      security:
+        - labs_auth:
+          - read
+          - write
+
+
+              
+  /feed/user/{userId}.json:
+    summary: Feed for User in Json format
+    get:
+      parameters:
+       - name: userId
+         in: 'path'
+         required: true
+         schema:
+          $ref: '#/components/schemas/LegacyUserId'
+      responses:
+        200:
+          description: Feed summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFeed'
+      tags:
+      - profile
+      security:
+        - labs_auth:
+          - read
+          - write
+
+
+
   
