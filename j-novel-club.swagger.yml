@@ -9,14 +9,12 @@ externalDocs:
   description: Forum
   url: https://forums.j-novel.club/topic/5142/developer-psa-labs-j-novel-club-is-your-new-friend?page=1
 servers:
-  - url: https://labs.j-novel.club/app/v1
+  - url: https://labs.j-novel.club/app/{version}
     variables:
-      'format':
-        default: 'protobuf'
+      'version':
+        default: 'v1'
         enum:
-          - json
-          - protobuf
-          - text
+          - v1
         description: ''
 tags:
   - name: auth
