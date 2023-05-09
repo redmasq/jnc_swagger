@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: J-Noven Club API
+  title: J-Novel Club API
   version: 1.0.1
   description: J-Novel Club API
   license:
@@ -172,6 +172,7 @@ components:
         amount:
           type: integer
           minimum: 0
+          example: 1095
         interval:
           type: string
           format: enum
