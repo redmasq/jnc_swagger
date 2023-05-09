@@ -1,1 +1,1 @@
-To view a friendly version of the yml file, see https://raw.githubusercontent.com/redmasq/jnc_swagger/main/swagger-ui/index.html
+To view a friendly version of the yml file, see https://redmasq.github.io/jnc_swagger
