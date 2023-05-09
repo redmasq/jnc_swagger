@@ -39,13 +39,61 @@ components:
       scheme: bearer
       bearerFormat: token
   schemas:
-    ResponseFormat:
+    BookPartSlug:
       type: string
-      enum:
-       - json
-       - protobuf
-       - text
-      default: protobuf
+      example: "book-name-volume-1-part-1"
+
+    BookPartTitle:
+      type: string
+      example: "Book Name: Volume 1 Part 1"
+
+    CDNUrl:
+      type: string
+      format: url
+      example: "https://cdn.example.com/Part1/bookname1-cover-400.jpg"
+
+    CoverData:
+      type: object
+      properties:
+        originalUrl:
+          type: string
+          example: ""
+          format: url
+        coverUrl:
+          type: string
+          $ref: "#/components/schemas/CDNUrl"
+        thumbnailUrl:
+          type: string
+          $ref: "#/components/schemas/CDNUrl"
+
+    FeedSummary:
+      type: object
+      properties:
+        username:
+          type: string
+          example: jnovelclubuser
+        list:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+
+    LegacyUserId:
+      type: string
+      example: "0a1234567890b123456c7def"
+      description: Can be retrieved from Profile.legacyId
+
+    Link:
+      type: object
+      properties:
+        href:
+          type: string
+          format: relative_url
+          example: "/feed/user/0a1234567890b123456c7def.json"
+        "#pcdata":
+          type: string
+          format: title
+          example: "JSON"
+
     LoginRequest:
       type: object
       required:
@@ -63,6 +111,7 @@ components:
         slim:
           type: boolean
           description: Set this to true if only needing a login token
+
     LoginResponse:
       type: object
       properties:
@@ -78,6 +127,64 @@ components:
           type: string
           description: The lenght of time the Bearer token is value in specified units, such as "s" for seconds
           example: "123456s"
+
+    Pagination:
+      type: object
+      properties:
+        limit:
+          type: integer
+          example: 50
+          minimum: 1
+        skip:
+          type: integer
+          example: 0
+          minimum: 0
+        lastPage:
+          type: boolean
+          example: false
+
+    PartData:
+      type: object
+      properties:
+        legacyId:
+          type: string
+          example: "0123456a78901b234567cd8e"
+        title:
+          type: string
+          $ref: "#/components/schemas/BookPartTitle"
+        originalTitle:
+          type: string
+          example: ""
+        slug:
+          type: string
+          $ref: "#/components/schemas/BookPartSlug"
+        number:
+          type: integer
+        preview:
+          type: boolean
+          example: false
+        hidden:
+          type: boolean
+          example: false
+        created:
+          type: string
+          format: date-time
+        expiration:
+          type: string
+          format: date-time
+        launch:
+          type: string
+          format: date-time
+        cover:
+          type: object
+          $ref: "#/components/schemas/CoverData"
+        progress:
+          type: integer
+          minimum: 0
+        totalMangaPages:
+          type: integer
+          minimum: 0
+
     Profile:
       type: object
       properties:
@@ -125,6 +232,7 @@ components:
         created:
           type: string
           format: date-time
+
     ProfileSubscription:
       type: object
       properties:
@@ -164,6 +272,7 @@ components:
         plan:
           type: object
           $ref: "#/components/schemas/ProfileSubscriptionPlan"
+
     ProfileSubscriptionPlan:
       type: object
       properties:
@@ -184,27 +293,25 @@ components:
         active:
           type: boolean
 
-    FeedSummary:
+    ReleaseData:
       type: object
       properties:
-        username:
-          type: string
-          example: jnovelclubuser
-        list:
+        parts:
           type: array
           items:
-            $ref: '#/components/schemas/Link'
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-          format: relative_url
-          example: "/feed/user/0a1234567890b123456c7def.json"
-        "#pcdata":
-          type: string
-          format: title
-          example: "JSON"
+            $ref: "#/components/schemas/PartData"
+        Pagination:
+          type: object
+          $ref: "#/components/schemas/Pagination"
+
+    ResponseFormat:
+      type: string
+      enum:
+       - json
+       - protobuf
+       - text
+      default: protobuf
+
     UserFeed:
       type: object
       properties:
@@ -236,10 +343,7 @@ components:
         name:
           type: string
           example: J-Novel Club
-    CDNUrl:
-      type: string
-      format: url
-      example: "https://cdn.example.com/Part1/bookname1-cover-400.jpg"
+
     UserFeedItem:
       type: object
       properties:
@@ -262,94 +366,6 @@ components:
         date_published:
           type: string
           format: date-time
-    BookPartTitle:
-      type: string
-      example: "Book Name: Volume 1 Part 1"
-    BookPartSlug:
-      type: string
-      example: "book-name-volume-1-part-1"
-    LegacyUserId:
-      type: string
-      example: "0a1234567890b123456c7def"
-      description: Can be retrieved from Profile.legacyId
-    Pagination:
-      type: object
-      properties:
-        limit:
-          type: integer
-          example: 50
-          minimum: 1
-        skip:
-          type: integer
-          example: 0
-          minimum: 0
-        lastPage:
-          type: boolean
-          example: false
-    CoverData:
-      type: object
-      properties:
-        originalUrl:
-          type: string
-          example: ""
-          format: url
-        coverUrl:
-          type: string
-          $ref: "#/components/schemas/CDNUrl"
-        thumbnailUrl:
-          type: string
-          $ref: "#/components/schemas/CDNUrl"
-    PartData:
-      type: object
-      properties:
-        legacyId:
-          type: string
-          example: "0123456a78901b234567cd8e"
-        title:
-          type: string
-          $ref: "#/components/schemas/BookPartTitle"
-        originalTitle:
-          type: string
-          example: ""
-        slug:
-          type: string
-          $ref: "#/components/schemas/BookPartSlug"
-        number:
-          type: integer
-        preview:
-          type: boolean
-          example: false
-        hidden:
-          type: boolean
-          example: false
-        created:
-          type: string
-          format: date-time
-        expiration:
-          type: string
-          format: date-time
-        launch:
-          type: string
-          format: date-time
-        cover:
-          type: object
-          $ref: "#/components/schemas/CoverData"
-        progress:
-          type: integer
-          minimum: 0
-        totalMangaPages:
-          type: integer
-          minimum: 0
-    ReleaseData:
-      type: object
-      properties:
-        parts:
-          type: array
-          items:
-            $ref: "#/components/schemas/PartData"
-        Pagination:
-          type: object
-          $ref: "#/components/schemas/Pagination"
       
 paths:
   /auth/login:
@@ -380,62 +396,7 @@ paths:
                 $ref: '#/components/schemas/LoginResponse'
       tags:
         - auth
-  /me:
-    summary: Profile
-    description: Show information about the user
-    get:
-      parameters:
-        - name: 'format'
-          in: query
-          schema:
-            $ref: '#/components/schemas/ResponseFormat'
 
-      responses:
-        200:
-          description: User Profile
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profile'
-          links:
-            LegacyUserId-FeedSummary:
-              operationId: feedSummaryForUser
-              parameters:
-                userId: '$response.body#/legacyId'
-            LegacyUserId-FeedJson:
-              operationId: feedJsonForUser
-              parameters:
-                userId: '$response.body#/legacyId'
-              
-
-      tags:
-      - profile
-      security:
-        - labs_auth:
-          - read
-          - write
-  /me/subscription:
-    summary: Profile Subscription Information
-    description: Details about Subscription
-    get:
-      parameters:
-        - name: 'format'
-          in: 'query'
-          schema:
-            $ref: '#/components/schemas/ResponseFormat'
-      responses:
-        200:
-          description: User Subscription Information
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProfileSubscription'
-      tags:
-      - profile
-      security:
-        - labs_auth:
-          - read
-          - write
   /feed/user/{userId}:
     summary: Feed for User
     get:
@@ -487,6 +448,65 @@ paths:
       security:
         - labs_auth:
           - read
+
+  /me:
+    summary: Profile
+    description: Show information about the user
+    get:
+      parameters:
+        - name: 'format'
+          in: query
+          schema:
+            $ref: '#/components/schemas/ResponseFormat'
+
+      responses:
+        200:
+          description: User Profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          links:
+            LegacyUserId-FeedSummary:
+              operationId: feedSummaryForUser
+              parameters:
+                userId: '$response.body#/legacyId'
+            LegacyUserId-FeedJson:
+              operationId: feedJsonForUser
+              parameters:
+                userId: '$response.body#/legacyId'
+              
+
+      tags:
+      - profile
+      security:
+        - labs_auth:
+          - read
+          - write
+
+  /me/subscription:
+    summary: Profile Subscription Information
+    description: Details about Subscription
+    get:
+      parameters:
+        - name: 'format'
+          in: 'query'
+          schema:
+            $ref: '#/components/schemas/ResponseFormat'
+      responses:
+        200:
+          description: User Subscription Information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSubscription'
+      tags:
+      - profile
+      security:
+        - labs_auth:
+          - read
+          - write
+
   /releases:
     summary: List of releases
     get:
